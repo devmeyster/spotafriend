@@ -1,14 +1,14 @@
 {
 	"AppDescription": {
-		"en": "A tutorial app for Spotify Apps API"
+		"en": "Find your friends that listen to good music."
 	},
 	"AppIcon": {
 		"36x18": "tutorial.png"
 	},
 	"AppName": {
-		"en": "Spotify Apps API Tutorial"
+		"en": "FriendStalk"
 	},
-	"BundleIdentifier": "api-tutorial",
+	"BundleIdentifier": "friendstalk",
 	"BundleType": "Application",
 	"BundleVersion": "0.1",
 	"DefaultTabs": [
