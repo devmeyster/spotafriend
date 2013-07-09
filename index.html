@@ -9,6 +9,7 @@
     <!-- Project CSS files -->
     <link rel="stylesheet" type="text/css" href="css/main.css">
     <link rel="stylesheet" type="text/css" href="css/github.css">
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
   </head>
   <body>
     <div id="wrapper">
@@ -27,7 +28,7 @@
       var sp = getSpotifyApi(),
         auth = sp.require('$api/auth'),
         app_id = '126891607432106',
-        permissions = ['user_actions.music'],
+        permissions = ['user_actions.music,friends_actions.music'],
         request_url = 'https://graph.facebook.com/me/music.listens',
         fbButtonHTML;
 
@@ -40,14 +41,30 @@
         auth.authenticateWithFacebook(app_id, permissions, {
           onSuccess: function(accessToken, ttl) {
             fbButtonHTML.style.display = 'none';
-            var url = 'https://graph.facebook.com/me?fields=id,music.listens,friends&access_token=' + accessToken;
+            // var url = 'https://graph.facebook.com/1052847553?method=GET&format=json&callback=___GraphExplorerAsyncCallback___&access_token=' + accessToken;
+            var url = 'https://graph.facebook.com/me?fields=id,friends,music.listens&access_token=' + accessToken;
             var xhr = new XMLHttpRequest();
             xhr.open('GET', url);
             document.getElementById('accessToken').innerHTML = accessToken;
             xhr.onreadystatechange = function () {
               if (xhr.readyState != 4) return;
               var response = JSON.parse(xhr.responseText);
-              handle(response);
+              response.friends.data.forEach(function(val, i){
+                url = 'https://graph.facebook.com/' + val.id +
+                  '?method=GET&format=json&fields=name,music.listens&access_token=' + accessToken;
+                $.ajax({
+                  dataType: "jsonp",
+                  success: function (response) {
+                    var listens = response["music.listens"] && response["music.listens"].data;
+                    if(!listens) return;
+                    var listensElem = document.getElementById('listens');
+                    listensElem.innerHTML = listensElem.innerHTML + response.name + "<br>";
+                    // listensElem.innerHTML = listensElem.innerHTML + print(listens);
+                  },
+                  url: url
+                });
+              });
+              // handle(response);
             }
             xhr.send(null);
           },
@@ -60,7 +77,7 @@
 
       function handle(response) {
         var listens = document.getElementById('listens');
-        listens.innerHTML = print(response);
+        listens.innerHTML = listens.innerHTML + print(response);
       }
     </script>
   </body>
